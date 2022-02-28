@@ -1,7 +1,11 @@
 version: 2
 updates:
   - package-ecosystem: "docker"
-    directory: "/"
+    directory: "/linux"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/windows"
     schedule:
       interval: "daily"
   - package-ecosystem: "github-actions"
