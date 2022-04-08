@@ -24,13 +24,13 @@ jobs:
           - platform: linux/amd64
             os: ubuntu-latest
             use-buildx: true
-            base: 3.15.4
+#            base: 3.15.4
             file: linux/Dockerfile
             tag-suffix: -linux-amd64
           - platform: linux/arm64/8
             os: ubuntu-latest
             use-buildx: true
-            base: 3.15.4
+#            base: 3.15.4
             file: linux/Dockerfile
             tag-suffix: -linux-arm64-8
           - platform: windows/amd64
@@ -41,7 +41,7 @@ jobs:
             # Related: https://github.com/docker/buildx/issues/176
             # Related: https://github.com/docker/build-push-action/issues/18
             use-buildx: false
-            base: ltsc2022
+#            base: ltsc2022
             file: windows/Dockerfile
             tag-suffix: -windows-amd64
     steps:
@@ -53,8 +53,8 @@ jobs:
       - name: Set release version
         if: ${{ matrix.use-buildx == false }}
         run: |
-          echo "RELEASE_VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e s/^v//)"" | Out-File -FilePath $env:GITHUB_ENV -Append
-#          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)"" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "RELEASE_VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e s/^v//)" | Out-File -FilePath $env:GITHUB_ENV -Append
+#          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" | Out-File -FilePath $env:GITHUB_ENV -Append
       - name: Debug
         if: ${{ matrix.use-buildx == false }}
         run: |
@@ -78,15 +78,16 @@ jobs:
         with:
           context: .
           file: ${{ matrix.file }}
-          build-args: |
-            BASE=${{ matrix.base }}
+#          build-args: |
+#            BASE=${{ matrix.base }}
           platforms: ${{ matrix.platform }}
           push: true
           tags: gesellix/echo-server:${{ env.RELEASE_VERSION }}${{ matrix.tag-suffix }}
       - name: Docker Build
         if: ${{ matrix.use-buildx == false }}
         run: |
-          docker build -f ${{ matrix.file }} --build-arg BASE=${{ matrix.base }} -t gesellix/echo-server:${{ env.RELEASE_VERSION }}${{ matrix.tag-suffix }} .
+          docker build -f ${{ matrix.file }} -t gesellix/echo-server:${{ env.RELEASE_VERSION }}${{ matrix.tag-suffix }} .
+#          docker build -f ${{ matrix.file }} --build-arg BASE=${{ matrix.base }} -t gesellix/echo-server:${{ env.RELEASE_VERSION }}${{ matrix.tag-suffix }} .
       - name: Docker Push
         if: ${{ matrix.use-buildx == false }}
         run: |
