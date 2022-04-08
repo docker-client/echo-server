@@ -24,17 +24,20 @@ jobs:
         include:
           - platform: linux/amd64
             os: ubuntu-latest
+            use-buildx: true
             base: 3.15.4
             file: linux/Dockerfile
             tag-suffix: -linux-amd64
           - platform: linux/arm64/8
             os: ubuntu-latest
+            use-buildx: true
             base: 3.15.4
             file: linux/Dockerfile
             tag-suffix: -linux-arm64-8
           - platform: windows/amd64
 #            os: windows-latest
             os: windows-2022
+            use-buildx: false
             base: ltsc2022
             file: windows/Dockerfile
             tag-suffix: -windows-amd64
@@ -46,19 +49,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set up QEMU
+        if: ${{ matrix.use-buildx == true }}
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
+        if: ${{ matrix.use-buildx == true }}
         uses: docker/setup-buildx-action@v1
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Docker info
-        run: docker info
-      - name: Docker buildx inspect
-        run: docker buildx inspect
-      - name: Build image
+      - name: Build and Push image
+        if: ${{ matrix.use-buildx == true }}
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -68,4 +70,12 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: true
           tags: gesellix/echo-server:${{ env.RELEASE_VERSION }}${{ matrix.tag-suffix }}
+      - name: Docker Build
+        if: ${{ matrix.use-buildx == false }}
+        run: |
+          docker build -f ${{ matrix.file }} --build-arg BASE=${{ matrix.base }} -t gesellix/echo-server:${{ env.RELEASE_VERSION }}${{ matrix.tag-suffix }} .
+      - name: Docker Push
+        if: ${{ matrix.use-buildx == false }}
+        run: |
+          docker push gesellix/echo-server:${{ env.RELEASE_VERSION }}${{ matrix.tag-suffix }}
 ...
