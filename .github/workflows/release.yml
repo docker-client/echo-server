@@ -55,10 +55,9 @@ jobs:
         run: |
           echo "RELEASE_VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e s/^v//)" | Out-File -FilePath $env:GITHUB_ENV -Append
 #          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" | Out-File -FilePath $env:GITHUB_ENV -Append
-      - name: Debug
-        if: ${{ matrix.use-buildx == false }}
+      - name: Print release version
         run: |
-          echo ${env:RELEASE_VERSION}
+          echo ${{ env.RELEASE_VERSION }}
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set up QEMU
@@ -104,25 +103,25 @@ jobs:
         run: |
           echo "RELEASE_VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e s/^v//)" >> $GITHUB_ENV
 #          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" >> $GITHUB_ENV
-#      - name: Checkout
-#        uses: actions/checkout@v2
-#      - name: Login to DockerHub
-#        uses: docker/login-action@v1
-#        with:
-#          username: ${{ secrets.DOCKERHUB_USERNAME }}
-#          password: ${{ secrets.DOCKERHUB_TOKEN }}
-#      - name: Docker Manifest
-#        run: |
-#          docker manifest create gesellix/echo-server:${{ env.RELEASE_VERSION }} \
-#            --amend gesellix/echo-server:${{ env.RELEASE_VERSION }}-linux-amd64 \
-#            --amend gesellix/echo-server:${{ env.RELEASE_VERSION }}-linux-arm64-8 \
-#            --amend gesellix/echo-server:${{ env.RELEASE_VERSION }}-windows-amd64
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Docker Manifest
+        run: |
+          docker manifest create gesellix/echo-server:${{ env.RELEASE_VERSION }} \
+            --amend gesellix/echo-server:${{ env.RELEASE_VERSION }}-linux-amd64 \
+            --amend gesellix/echo-server:${{ env.RELEASE_VERSION }}-linux-arm64-8 \
+            --amend gesellix/echo-server:${{ env.RELEASE_VERSION }}-windows-amd64
 #      - name: Docker Annotate
 #        run: |
 #          docker manifest annotate --os windows --arch amd64 \
 #            --os-version "10.0.20348.169"\
 #            gesellix/echo-server:${{ env.RELEASE_VERSION }} gesellix/echo-server:${{ env.RELEASE_VERSION }}-windows-amd64
-#      - name: Docker Push
-#        run: |
-#          docker manifest push gesellix/echo-server:${{ env.RELEASE_VERSION }}
+      - name: Docker Push
+        run: |
+          docker manifest push gesellix/echo-server:${{ env.RELEASE_VERSION }}
 ...
