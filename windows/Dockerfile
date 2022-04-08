@@ -16,10 +16,6 @@ RUN cd /app && go get -d \
     -o /bin/cat cat.go
 
 FROM mcr.microsoft.com/windows/nanoserver:ltsc2022
-#FROM mcr.microsoft.com/windows/servercore:ltsc2019
-#FROM mcr.microsoft.com/windows/nanoserver:20H2
-#FROM mcr.microsoft.com/windows/nanoserver:1903
-#FROM mcr.microsoft.com/windows/nanoserver:1809
 
 ENV LANG=C.UTF-8
 ENV SERVER_PORT=8080
