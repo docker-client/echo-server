@@ -46,14 +46,19 @@ jobs:
             tag-suffix: -windows-amd64
     steps:
       - name: Set release version
+        if: ${{ matrix.use-buildx == true }}
         run: |
           echo "RELEASE_VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e s/^v//)" >> $GITHUB_ENV
 #          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" >> $GITHUB_ENV
-#      - name: Set release version
-#        run: |
-#          echo "action_state=yellow" | Out-File -FilePath $env:GITHUB_ENV -Append # no need for -Encoding utf8
-#          echo "RELEASE_VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e s/^v//)" >> $GITHUB_ENV
-#          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" >> $GITHUB_ENV
+      - name: Set release version
+        if: ${{ matrix.use-buildx == false }}
+        run: |
+          echo "RELEASE_VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e s/^v//)"" | Out-File -FilePath $env:GITHUB_ENV -Append
+#          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)"" | Out-File -FilePath $env:GITHUB_ENV -Append
+      - name: Debug
+        if: ${{ matrix.use-buildx == false }}
+        run: |
+          echo ${env:RELEASE_VERSION}
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set up QEMU
@@ -78,14 +83,6 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: true
           tags: gesellix/echo-server:${{ env.RELEASE_VERSION }}${{ matrix.tag-suffix }}
-#      - name: Debug1
-#        if: ${{ matrix.use-buildx == false }}
-#        run: |
-#          echo ${{ env.RELEASE_VERSION }}
-      - name: Debug2
-        if: ${{ matrix.use-buildx == false }}
-        run: |
-          echo ${env:RELEASE_VERSION }
       - name: Docker Build
         if: ${{ matrix.use-buildx == false }}
         run: |
@@ -94,4 +91,37 @@ jobs:
         if: ${{ matrix.use-buildx == false }}
         run: |
           docker push gesellix/echo-server:${{ env.RELEASE_VERSION }}${{ matrix.tag-suffix }}
+  # from:
+  # https://github.com/phillipsj/pstools/blob/main/.github/workflows/publish.yaml
+  # https://www.phillipsj.net/posts/building-windows-and-linux-containers-with-github-actions/
+  publish-manifest:
+    name: Publish Manifest
+    runs-on: ubuntu-latest
+    needs: build-publish-containers
+    steps:
+      - name: Set release version
+        run: |
+          echo "RELEASE_VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e s/^v//)" >> $GITHUB_ENV
+#          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" >> $GITHUB_ENV
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#      - name: Login to DockerHub
+#        uses: docker/login-action@v1
+#        with:
+#          username: ${{ secrets.DOCKERHUB_USERNAME }}
+#          password: ${{ secrets.DOCKERHUB_TOKEN }}
+#      - name: Docker Manifest
+#        run: |
+#          docker manifest create gesellix/echo-server:${{ env.RELEASE_VERSION }} \
+#            --amend gesellix/echo-server:${{ env.RELEASE_VERSION }}-linux-amd64 \
+#            --amend gesellix/echo-server:${{ env.RELEASE_VERSION }}-linux-arm64-8 \
+#            --amend gesellix/echo-server:${{ env.RELEASE_VERSION }}-windows-amd64
+#      - name: Docker Annotate
+#        run: |
+#          docker manifest annotate --os windows --arch amd64 \
+#            --os-version "10.0.20348.169"\
+#            gesellix/echo-server:${{ env.RELEASE_VERSION }} gesellix/echo-server:${{ env.RELEASE_VERSION }}-windows-amd64
+#      - name: Docker Push
+#        run: |
+#          docker manifest push gesellix/echo-server:${{ env.RELEASE_VERSION }}
 ...
