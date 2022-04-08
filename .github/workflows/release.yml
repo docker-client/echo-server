@@ -2,12 +2,6 @@
 name: Build and Push multi-arch Docker image
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: tag name
-        type: string
-        required: true
   release:
     types:
       - released
@@ -48,13 +42,11 @@ jobs:
       - name: Set release version
         if: ${{ matrix.use-buildx == true }}
         run: |
-          echo "RELEASE_VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e s/^v//)" >> $GITHUB_ENV
-#          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" >> $GITHUB_ENV
+          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" >> $GITHUB_ENV
       - name: Set release version
         if: ${{ matrix.use-buildx == false }}
         run: |
-          echo "RELEASE_VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e s/^v//)" | Out-File -FilePath $env:GITHUB_ENV -Append
-#          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" | Out-File -FilePath $env:GITHUB_ENV -Append
       - name: Print release version
         run: |
           echo ${{ env.RELEASE_VERSION }}
@@ -101,8 +93,7 @@ jobs:
     steps:
       - name: Set release version
         run: |
-          echo "RELEASE_VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e s/^v//)" >> $GITHUB_ENV
-#          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" >> $GITHUB_ENV
+          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v2
       - name: Login to DockerHub
