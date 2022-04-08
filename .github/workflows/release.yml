@@ -49,6 +49,11 @@ jobs:
         run: |
           echo "RELEASE_VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e s/^v//)" >> $GITHUB_ENV
 #          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" >> $GITHUB_ENV
+#      - name: Set release version
+#        run: |
+#          echo "action_state=yellow" | Out-File -FilePath $env:GITHUB_ENV -Append # no need for -Encoding utf8
+#          echo "RELEASE_VERSION=$(echo '${{ github.event.inputs.version }}' | sed -e s/^v//)" >> $GITHUB_ENV
+#          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set up QEMU
@@ -73,10 +78,10 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: true
           tags: gesellix/echo-server:${{ env.RELEASE_VERSION }}${{ matrix.tag-suffix }}
-      - name: Debug1
-        if: ${{ matrix.use-buildx == false }}
-        run: |
-          echo ${{ env.RELEASE_VERSION }}
+#      - name: Debug1
+#        if: ${{ matrix.use-buildx == false }}
+#        run: |
+#          echo ${{ env.RELEASE_VERSION }}
       - name: Debug2
         if: ${{ matrix.use-buildx == false }}
         run: |
