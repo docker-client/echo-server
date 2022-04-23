@@ -1,4 +1,4 @@
-module docker-api-testutil
+module echo-server
 
 go 1.15
 
