@@ -21,6 +21,7 @@ func EchoRequest(c *gin.Context) {
 
 func main() {
 	r := gin.Default()
+	r.SetTrustedProxies(nil)
 	r.GET("/", RootRequest)
 	r.GET("/api/echo", EchoRequest)
 	r.POST("/api/echo", EchoRequest)
