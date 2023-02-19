@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 )
@@ -15,7 +15,7 @@ func EchoRequest(c *gin.Context) {
 	if c.Request.Body == nil {
 		c.Data(http.StatusOK, c.Request.Header.Get("content-type"), nil)
 	}
-	requestBody, _ := ioutil.ReadAll(c.Request.Body)
+	requestBody, _ := io.ReadAll(c.Request.Body)
 	c.Data(http.StatusOK, c.Request.Header.Get("content-type"), requestBody)
 }
 
