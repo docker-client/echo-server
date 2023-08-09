@@ -1,4 +1,4 @@
-FROM golang:1.20.6-alpine AS build-backend
+FROM golang:1.21.0-alpine AS build-backend
 LABEL builder=true
 
 ENV CGO_ENABLED=0
