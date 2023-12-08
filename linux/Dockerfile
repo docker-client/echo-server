@@ -15,7 +15,7 @@ RUN cd /app && go get -d \
     -ldflags "-s -w -extldflags \"-static\"" \
     -o /bin/cat cat.go
 
-FROM alpine:3.18.5
+FROM alpine:3.19.0
 
 ENV LANG=C.UTF-8
 ENV SERVER_PORT=8080
