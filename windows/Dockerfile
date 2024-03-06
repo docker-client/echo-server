@@ -1,4 +1,4 @@
-FROM golang:1.22.0-nanoserver AS build-backend
+FROM golang:1.22.1-nanoserver AS build-backend
 LABEL builder=true
 
 ENV CGO_ENABLED=0
