@@ -1,0 +1,35 @@
+---
+name: CI
+on:
+  workflow_dispatch:
+  push:
+jobs:
+  build-linux:
+    name: Build Containers (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Docker Build
+        run: |
+          docker build -f linux/Dockerfile -t gesellix/echo-server:local-linux .
+  build-windows:
+    name: Build Containers (Windows)
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Docker Build
+        run: |
+          docker build -f windows/Dockerfile -t gesellix/echo-server:local-windows .
+...
