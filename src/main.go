@@ -19,12 +19,18 @@ func EchoRequest(c *gin.Context) {
 	c.Data(http.StatusOK, c.Request.Header.Get("content-type"), requestBody)
 }
 
+func HijackRequest(c *gin.Context) {
+	upgradeHandler(c.Writer, c.Request)
+}
+
 func main() {
 	r := gin.Default()
 	r.SetTrustedProxies(nil)
 	r.GET("/", RootRequest)
 	r.GET("/api/echo", EchoRequest)
 	r.POST("/api/echo", EchoRequest)
+	r.GET("/api/stream", HijackRequest)
+	r.POST("/api/stream", HijackRequest)
 	err := r.Run()
 	if err != nil {
 		log.Fatalf("Run failed: %s\n", err)
