@@ -9,7 +9,7 @@ RUN cd /app && go get -d \
  && go build \
     -a \
     -ldflags '-s -w -extldflags "-static"' \
-    -o /bin/main main.go \
+    -o /bin/main main.go hijack.go \
  && go build \
     -a \
     -ldflags "-s -w -extldflags \"-static\"" \
@@ -19,6 +19,7 @@ FROM alpine:3.22.1
 
 ENV LANG=C.UTF-8
 ENV SERVER_PORT=8080
+#ENV GIN_MODE=release
 
 COPY ./src/gattaca.txt /gattaca.txt
 
