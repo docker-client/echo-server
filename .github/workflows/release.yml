@@ -1,6 +1,10 @@
 ---
 name: Build and Push multi-arch Docker image
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   release:
     types:
