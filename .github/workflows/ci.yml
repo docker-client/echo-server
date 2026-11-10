@@ -1,10 +1,13 @@
 ---
 name: CI
+
 permissions:
   contents: read
+
 on:
   workflow_dispatch:
   push:
+
 jobs:
   build-linux:
     name: Build Containers (Linux)
@@ -20,6 +23,7 @@ jobs:
       - name: Docker Build
         run: |
           docker build -f linux/Dockerfile -t gesellix/echo-server:local-linux .
+
   build-windows:
     name: Build Containers (Windows)
     runs-on: windows-2022
